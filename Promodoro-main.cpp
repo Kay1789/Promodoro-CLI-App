@@ -3,67 +3,35 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
-#include <ostream>
 #include <string>
 #include <thread>
 
-// Terminal color macros
+// ====== Basic Color Macros (4-bit & 24-bit ANSI codes) ======
 #define Red "\033[0;31m"
-#define Green "\033[0;32m"
 #define Blue "\033[0;34m"
-#define BG_Cyan "\033[0;106m"
+#define Yellow "\033[0;33m"
+#define Green "\033[0;32m"
 #define Reset "\033[0m"
-#define BHI_Magenta "\033[1;95m"
-#define BHI_Cyan "\033[1;96m"
-#define BHI_Green "\033[1;92m"
-#define Cyan "\033[0;36m"
 
-// Draws the timer in mm:ss format with color based on remaining time
-auto PromodoroTimer(int totalTimer) -> void {
-    int mins = totalTimer / 60;
-    int secs = totalTimer % 60;
+// 24-bit (RGB) foreground and background colors
+#define RGB_Color(r,g,b) "\033[38;2;" #r ";" #g ";" #b "m"
+#define RGB_Color_BG(r,g,b) "\033[48;2;" #r ";" #g ";" #b "m"
 
-    std::string colorForTime = (totalTimer <= 60) ? Red : Blue;
-
-    std::cout << colorForTime << "\r"
-              << std::setw(2) << std::setfill('0') << mins << ":"
-              << std::setw(2) << std::setfill('0') << secs << " "
-              << std::flush << Reset;
-}
-
-// Handles the countdown loop, ticking down every second
-auto PromodoroCountDown(int totalCountDown) {
-    while (totalCountDown >= 0) {
-        PromodoroTimer(totalCountDown);
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        totalCountDown--;
-    }
-}
-
-// Shows a static countdown without logic (used for exiting)
-auto contiuneCountDown(int exitTime) -> void {
-    int noMins = 0;
-
-    std::cout << Green << "\r"
-              << std::setw(2) << std::setfill('0') << noMins << ":"
-              << std::setfill('0') << exitTime << " "
-              << std::flush << Reset;
-}
-
-// Break-time ASCII art & message
+// ====== ASCII art messages ======
 auto breakStarting() -> void {
-    std::cout << BHI_Cyan << R"(
+    // Message + art for breaks
+    std::cout << "\n" << RGB_Color(81, 53, 68) << R"(
  /\_/\
 ( o.o )
  > ^ <
 
 🛑 Pause. Recharge your spirit.
-)" << Reset;
+)" << Reset << "\n";
 }
 
-// Focus-time ASCII art & message
 auto sessionStarting() -> void {
-    std::cout << BHI_Green << R"(
+    // Message + art for focus sessions
+    std::cout << "\n" << RGB_Color(110, 0, 0) << R"(
    (  )
   (    )
  (  🔥  )
@@ -71,136 +39,221 @@ auto sessionStarting() -> void {
    (  )
 
 ⚔️ Time to rise. Focus, warrior!
-)" << Reset;
+)" << Reset << "\n";
 }
 
-// Goodbye ASCII art & message
 auto leaving() -> void {
-    std::cout << BHI_Magenta << R"(
+    // Message + art when user quits
+    std::cout << "\n" << RGB_Color(34, 137, 130) << R"(
  \o/
   |
  / \
 
 👋 Until next time, hero.
-)" << Reset;
+)" << Reset << "\n";
 }
 
-// Asks user whether they wanna continue or quit
-auto WannaContiune() -> void {
-    char ch;
-    int exitOk = 3;
+// ====== Timer functions ======
 
-    std::cout << Cyan << "\n➤ Shall we press on to the next mission? [Y/N]: " << Reset;
-    std::cin >> ch;
-    ch = std::toupper(ch);
+// Display timer in MM:SS format (switches color depending on time left)
+auto PromodoroCount(int promo_Count)->void{
+    int promo_Mins = promo_Count / 60;
+    int promo_Secs = promo_Count % 60;
 
-    // If they said no, do a dramatic exit countdown and quit
-    if (ch != 'Y') {
-        std::cout << Red << "Logging out of the dojo... See you next battle!\n" << Reset;
-        while (exitOk >= 0) {
-            contiuneCountDown(exitOk);
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            exitOk--;
-        }
-        leaving();
-        exit(EXIT_SUCCESS);
+    // If more than 1 min left → Blue, else Red
+    std::string colorForTime = (promo_Count >= 60)? Blue : Red;
+
+    std::cout << colorForTime 
+              << "\r" << std::setw(2) << std::setfill('0') << promo_Mins 
+              << ":" << std::setw(2) << std::setfill('0') << promo_Secs 
+              << " " << std::flush << Reset;
+}
+
+// Countdown loop for sessions/breaks
+auto PromodoroCountDown(int promo_Count_Down)->void{
+    while(promo_Count_Down >= 0){
+        PromodoroCount(promo_Count_Down);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        promo_Count_Down--;
     }
 }
 
-// 🧠 Main program logic: handles flow between focus + breaks + custom breaks
-auto main() -> int {
-    char op, ope, ch;
-    int promodoro_focus = 1500;       // 25 min
-    int Spromodoro_break = 300;       // 5 min short break
-    int Lpromodoro_break = 900;       // 15 min long break
-    int Upromodoro_break;             // custom break
-    int Session = 0;                  // track session count
+// Fake mini countdown (used on exit animation)
+auto fakePromoCount(int fakeCount)->void{
+    int noMins = 0;
+    int fakeSecs = fakeCount % 60;
 
-    // 💻 Intro UI stuff
-    std::cout << BHI_Magenta << "|~_~_~_~_~_~_~_~_~|" << Reset << "\n";
-    std::cout << Blue << BG_Cyan << "   ⚔️  PROMODORO APP V2.0  ⚔️   " << Reset << "\n";
-    std::cout << BHI_Magenta << "|~_~_~_~_~_~_~_~_~|" << Reset << "\n";
-    std::cout << Blue << "    『 Focus Mode Engaged 』    " << Reset << "\n";
-    std::cout << Blue << "   🌸 Let the coding saga begin 🌸  " << Reset << "\n";
+    std::cout << RGB_Color(178,34,34) 
+              << "\r" << std::setw(2) << std::setfill('0') << noMins 
+              << ":" << std::setw(2) << std::setfill('0') << fakeSecs 
+              << " " << std::flush << Reset;
+}
 
-    std::cout << Green << "🔥『Start Session』[F] — Time to unleash your inner warrior!\n" << Reset;
-    std::cout << Red << "💀『Quit』[Q] — Retreat if you must, but the battle awaits!\n" << Reset;
+auto fakePromoCountDown(int fake_Count_Down)->void{
+    while(fake_Count_Down >= 0){
+        fakePromoCount(fake_Count_Down);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        fake_Count_Down--;
+    }
+}
 
-    std::cin >> op;
+// Convert minutes → seconds
+auto TimeConverter(int m)->int { return m * 60; }
+
+// Ask user if they want to continue or exit
+auto promoDecssion()->void{
+    char op;
+
+    std::cout << RGB_Color(176,196,222) 
+              << "Do you wanna Continue? \nYes [Y] \nNo [N] " 
+              << Reset << "\n";
+    std::cin >> std::ws >> op;
     op = std::toupper(op);
 
-    while (true) {
-        switch (op) {
-            case 'F': {
+    if(op != 'Y'){
+        std::cout << Red << "Exiting..." << Reset << "\n";
+        leaving();
+        fakePromoCountDown(3);
+        exit(EXIT_SUCCESS); 
+    }
+}
+
+// ====== MAIN PROGRAM ======
+auto main()->int{
+    std::cout << RGB_Color(230,230,250) 
+              << "beta v4,5 Promodoro CLI App " << Reset << "\n";
+
+    // Default session/break times
+    int workMins = 25;
+    int sBreakMins = 5;
+    int bBreakMins = 15;
+    int Upromodoro_break; // for custom break input
+    int session = 0;      // track number of completed sessions
+    char op;              // main start/quit choice
+    char ope;             // break menu choice
+
+    // Convert all to seconds
+    int WM = TimeConverter(workMins);
+    int sBM = TimeConverter(sBreakMins);
+    int bBM = TimeConverter(bBreakMins);
+
+    // Session counter color (green until >= 2, then yellow)
+    std::string ColorForSession = (session >= 2)? Yellow : Green;
+
+    // ====== UI Intro ======
+    std::cout << RGB_Color(171, 149, 50) << "|~_~_~_~_~_~_~_~_~|" << Reset << "\n";
+    std::cout << RGB_Color(28, 53, 92) << RGB_Color_BG(115, 123, 126) 
+              << "   ⚔️  PROMODORO APP V2.0  ⚔️   " << Reset << "\n";
+    std::cout << RGB_Color(171, 149, 50) << "|~_~_~_~_~_~_~_~_~|" << Reset << "\n";
+    std::cout << RGB_Color(225, 232, 162) << "    『 Focus Mode Engaged 』    " << Reset << "\n";
+    std::cout << RGB_Color(225, 232, 162) << "   🌸 Let the coding saga begin 🌸  " << Reset << "\n";
+
+    // Start/Quit menu
+    std::cout << RGB_Color(6, 84, 51) 
+              << "🔥『Start Session』[S] — Time to unleash your inner warrior!\n" << Reset;
+    std::cout << RGB_Color(180, 19, 27) 
+              << "💀『Quit』[Q] — Retreat if you must, but the battle awaits!\n" << Reset;
+    std::cin >> std::ws >> op;
+    op = std::toupper(op);
+
+    while(true){
+        switch(op){
+            case 'S': {
+                // ====== Focus Session ======
+                std::cout << RGB_Color(92, 89, 123) 
+                          << "🔥『Focus no Jutsu!』Engaged. Become the main character." 
+                          << Reset << "\n";
                 sessionStarting();
-                std::cout << "🔥『Focus no Jutsu!』Engaged. Become the main character.\n";
-                Session++;
-                PromodoroCountDown(promodoro_focus);
+                PromodoroCountDown(WM); 
+                session++;
 
-                // Focus session done
-                std::cout << "\n⚔️ Training arc: COMPLETE.\n";
-                std::cout << "💤 Rest well, young warrior... the next challenge awaits.\n";
-
-                std::string SessionColor = (Session >= 2) ? Green : Red;
-
-                std::cout << SessionColor << "===============================\n";
-                std::cout << "Current Session : " << Session << "\n";
+                // Show session progress
+                std::cout << "\n" << ColorForSession << "===============================\n";
+                std::cout << "Current Session : " << session << "\n";
                 std::cout << "===============================" << Reset << "\n";
 
-                // Ask for break type
-                std::cout << "1️⃣  Built-in Break  (5 minutes) 🌿\n";
-                std::cout << "    🧘‍♂️ *Recommended by the wise masters of time. Balance is power.*\n\n";
+                // ====== Break Menu ======
+                std::cout << RGB_Color(245, 245, 220) << "1️⃣  Built-in Break  (5 minutes) 🌿" << Reset << "\n";
+                std::cout << RGB_Color(245, 245, 220) 
+                          << "    🧘‍♂️ *Recommended by the wise masters of time. Balance is power.*" 
+                          << Reset << "\n\n";
 
-                std::cout << "2️⃣  Custom Break ⏱️\n";
-                std::cout << "    🌀 *Forge your own destiny, set your own limits.*\n\n";
+                std::cout << RGB_Color(245, 245, 220) << "2️⃣  Custom Break ⏱️\n";
+                std::cout << RGB_Color(245, 245, 220) 
+                          << "    🌀 *Forge your own destiny, set your own limits.*" 
+                          << Reset << "\n\n";
 
-                std::cout << "💭 Choose your path, young warrior (1 or 2): ";
-                std::cin >> ope;
+                std::cout << RGB_Color(245, 245, 220) 
+                          << "💭 Choose your path, young warrior (1 or 2): " << Reset;
+                std::cin >> std::ws >> ope;
                 ope = toupper(ope);
 
-                if (ope != '1') {
-                    // Custom break flow
-                    std::cout << "\n🌀 The wind whispers... ‘How long will your soul rest before the next battle?’\n";
-                    std::cout << "⏳ Enter your desired break duration in **minutes**, brave warrior: ";
+                // ====== Custom Break Flow ======
+                if('2' == ope){
+                    std::cout << RGB_Color(245, 245, 220) 
+                              << "🌀 The wind whispers... ‘How long will your soul rest before the next battle?’" 
+                              << Reset << "\n";
+                    std::cout << RGB_Color(245, 245, 220) 
+                              << "⏳ Enter your desired break duration in **minutes**, brave warrior: " 
+                              << Reset;
                     std::cin >> Upromodoro_break;
-                    PromodoroCountDown(Upromodoro_break * 60);
+                    int UP_B = TimeConverter(Upromodoro_break);
+                    PromodoroCountDown(UP_B);
 
-                    WannaContiune();
-                } else {
-                    // Built-in short break flow
+                    promoDecssion();
+
+                // ====== Built-in Break Flow ======
+                }else if('1' == ope){
                     breakStarting();
-                    std::cout << "\n🌙 — Intermission Unlocked —\n";
-                    std::cout << "🎐 “A true warrior sharpens both sword and soul between battles.”\n";
-                    std::cout << "⏳ Break Time: 5 minutes\n\n";
+                    std::cout << "\n" << RGB_Color(245, 245, 220) 
+                              << "🌙 — Intermission Unlocked —" << Reset << "\n";
+                    std::cout << RGB_Color(245, 245, 220) 
+                              << "🎐 “A true warrior sharpens both sword and soul between battles.”" 
+                              << Reset << "\n";
+                    std::cout << RGB_Color(245, 245, 220) 
+                              << "⏳ Break Time: 5 minutes" << Reset <<"\n\n";
 
-                    PromodoroCountDown(Spromodoro_break);
+                    PromodoroCountDown(sBM);
 
-                    std::cout << "\n🌅 The dawn breaks... your rest is complete.\n";
-                    std::cout << "⚔️ The next battle awaits, warrior — stand tall and fight!\n\n";
+                    std::cout << RGB_Color(245, 245, 220) 
+                              << "\n🌅 The dawn breaks... your rest is complete." << Reset << "\n";
+                    std::cout << RGB_Color(245, 245, 220) 
+                              << "⚔️ The next battle awaits, warrior — stand tall and fight!" 
+                              << Reset << "\n\n";
 
-                    WannaContiune();
-
-                    // Long break logic after 4 sessions
-                    if (Session == 4) {
-                        std::cout << "\n🌸 — Arc Complete: Four Seasons Conquered —\n";
-                        std::cout << "🔥 This is your *Long Break*.\n";
-                        std::cout << "⏳ Break Time: 15 minutes\n\n";
-
-                        PromodoroCountDown(Lpromodoro_break);
-                        Session = 0;
-
-                        std::cout << "\n🔥 Energy restored, your spirit blazes anew!\n";
-                        WannaContiune();
-                    }
+                    promoDecssion();
                 }
+
+                // ====== Long Break Flow ======
+                if(4 == session){
+                    std::cout << "\n" << RGB_Color(245, 245, 220) 
+                              << "🌸 — Arc Complete: Four Seasons Conquered —" << Reset << "\n";
+                    std::cout << RGB_Color(245, 245, 220) 
+                              << "🔥 This is your *Long Break*." << Reset << "\n";
+                    std::cout << RGB_Color(245, 245, 220) 
+                              << "⏳ Break Time: 15 minutes" << Reset << "\n\n";
+                    std::cout << "\n" << RGB_Color(245, 245, 220) 
+                              << "🔥 Energy restored, your spirit blazes anew!" << Reset << "\n\n";
+                    breakStarting();
+                    PromodoroCountDown(bBM); 
+                    session = 0; // reset session counter
+                    promoDecssion();
+                }
+            }
+            break;
+
+            case 'Q': {
+                // Quit flow
+                std::cout << Red << "Exiting..." << Reset << "\n";
+                leaving();
+                exit(EXIT_SUCCESS);
                 break;
             }
 
-            case 'Q': leaving(); exit(EXIT_SUCCESS); break;
-
-            default:
-                std::cout << "Invalid input try again \n";
-                continue;
+            default: 
+                std::cout << "Invalid input"; 
+                break;
         }
     }
+  return 0;
 }
