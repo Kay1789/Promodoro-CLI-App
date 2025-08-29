@@ -1,46 +1,59 @@
-# Promodoro-CLI-App
+🧸 Promodoro CLI Timer – C++ Edition (V3.4-0)
 
-# 🧸 Pomodoro CLI Timer – C++ Edition
+> Terminal-based Pomodoro timer with colorful ANSI visuals, anime-inspired ASCII art, and smooth C++ threading ✨
+Built for focus, chill breaks, and good coding vibes.
 
-> A cozy lil' terminal-based Pomodoro timer, featuring cute ASCII animals, ANSI color styling, and modern C++ threading ✨  
-Built with ✨ focus, 🍵 breaks, and 💻 vibes in mind.
 
----
 
-## 🧠 What is this?
-
-A fun and functional **Pomodoro timer** written in **C++**, made for productivity freaks and terminal lovers.
-
-It includes:  
-- ⏱️ 25-minute focus sessions with anime-style countdown and motivational ASCII art  
-- 💤 5-minute short breaks and 🧠 15-minute long breaks after 4 sessions, triggered automatically  
-- 🐱🐻🐰 Cute and chill ASCII art companions to keep you hyped  
-- 🌈 ANSI terminal colors to spice things up, with colors changing near session end for dramatic effect  
-- 🧵 Uses modern `std::this_thread::sleep_for()` for smooth timer delays and clean countdown visuals  
-- 🔄 Option to choose built-in or custom breaks each session, with recommended default breaks for balance  
-- 🎭 Dramatic prompts asking if you wanna continue or retreat — anime dojo vibes on point  
 
 ---
 
-## 🎮 How to Run It
+🧠 What is this?
 
-1. Clone this repo:  
-   ```bash  
-   git clone https://github.com/YOUR_USERNAME/pomodoro-cli-cpp.git  
-   cd pomodoro-cli-cpp
+A fun and functional Pomodoro CLI timer written in modern C++, designed to keep you motivated and entertained while coding.
+
+It now includes:
+
+⏱️ 25-minute focus sessions with dramatic countdown, color transitions (Blue → Red near end), and anime-style motivational ASCII art
+
+💤 5-minute short breaks and 15-minute long breaks automatically after every 4 focus sessions
+
+🐱🐻🐰 Cute ASCII companions for focus, break, and exit prompts
+
+🌈 24-bit RGB ANSI colors, plus fallback 4-bit color macros for terminals that don’t support full RGB
+
+🔄 Choice between built-in or custom breaks each session
+
+🎭 Dramatic “Continue or Quit” prompts with mini exit countdown for dojo vibes
+
+🧵 Smooth timer delay using std::this_thread::sleep_for()
+
+
+
+---
+
+🎮 How to Run It
+
+1. Clone this repo:
+
+
+
+git clone https://github.com/YOUR_USERNAME/promodoro-cli.git
+cd promodoro-cli
 
 2. Compile the program:
 
-g++ -std=c++17 -o pomodoro pomodoro.cpp
 
 
-3. Run it!
+g++ -std=c++17 -o promodoro promodoro.cpp
 
-./pomodoro
+3. Run it:
 
 
 
-> 💡 Make sure your terminal supports ANSI colors (most modern ones do).
+./promodoro
+
+> 💡 Make sure your terminal supports ANSI colors (most modern terminals do).
 
 
 
@@ -49,10 +62,7 @@ g++ -std=c++17 -o pomodoro pomodoro.cpp
 
 📸 Sneak Peek
 
-🍅 Start the Session [F]
-❌ Quit [Q]
-
-🐱 When you start a session:
+Start a focus session:
 
 (  )
   (    )
@@ -62,7 +72,7 @@ g++ -std=c++17 -o pomodoro pomodoro.cpp
 
 ⚔️ Time to rise. Focus, warrior!
 
-🐻 When break time hits:
+During break:
 
 /\_/\
 ( o.o )
@@ -70,7 +80,7 @@ g++ -std=c++17 -o pomodoro pomodoro.cpp
 
 🛑 Pause. Recharge your spirit.
 
-🐰 On exit:
+On exit:
 
 \o/
   |
@@ -83,19 +93,17 @@ g++ -std=c++17 -o pomodoro pomodoro.cpp
 
 🔧 Features & Tech
 
-Modern C++17 with clean function modularity (countdown, breaks, prompts)
+Modern C++17 with clear modular functions (countdowns, breaks, UI prompts)
 
-std::setw & std::setfill for pretty timer formatting
+std::setw & std::setfill for neat MM:SS timer formatting
 
-ANSI color macros with #define for easy customization
+24-bit RGB color macros with optional 4-bit fallback
 
-Dramatic session and break prompts with anime-inspired wording
+Built-in vs custom break selection per session
 
-Automatic long breaks after every 4 focus sessions — no extra input needed
+Automatic long break every 4 focus sessions
 
-User option for custom break lengths or recommended built-in breaks
-
-Cute, minimal ASCII art keeping it chill but recognizable
+Mini exit countdown with dramatic ASCII art
 
 
 
@@ -103,41 +111,47 @@ Cute, minimal ASCII art keeping it chill but recognizable
 
 🚧 Upcoming Power-Ups
 
-> Still training. These upgrades are on the scroll:
+🧠 Session XP System – track completed sessions like an RPG
 
+🔕 Silent Mode (--ninja) – stealth timer with no ASCII art
 
+🔔 Break/Focus sound cues – terminal beeps for mode changes
 
-🧠 Session XP System
-Track how many sessions you’ve completed — level up your focus stats like a real RPG.
+📊 Session Stats Dashboard – track daily/weekly productivity
 
-🔕 Silent Mode (--ninja)
-For when you wanna go stealth mode — no ASCII, no prompts, just pure timer discipline.
+🧘 Zen Mode – motivational quotes/haiku during breaks
 
-🔔 Break/Focus Sound Cues
-Get a terminal beep or sound to let you know when it's time to switch modes.
+🎵 Optional background music/lo-fi tracks
 
-📊 Session Stats Dashboard
-Daily/weekly stats: how many sessions you crushed, total hours focused, etc.
-
-🧘 Zen Mode
-Replace ASCII with motivational quotes or haiku during breaks.
-
-🎵 Background Music (Experimental)
-Optional lo-fi system call to launch your fave playlist or ambient track.
-
-🛠️ Customizable Timer Durations
-Set your own focus/break/long break times through config or CLI args.
+🛠️ Custom timer durations via CLI or config file
 
 
 
 ---
 
-🧠 Why I Made This
+💖 Why I Made This
 
-> Just practicing logic + modern C++ while making something fun.
-Inspired by ADHD brains like mine who need breaks + rewards 🤪💅
-Also: terminal apps are cool and way more customizable than mobile apps.
+> Practicing logic + modern C++ while making something fun.
+Inspired by ADHD brains like mine who need breaks, rewards, and a little anime hype 🤪💻
 
+
+
+
+---
+
+🆕 What’s New in v4.5
+
+Added 24-bit RGB ANSI colors for focus, break, and exit screens
+
+Maintains built-in & custom break choices each session
+
+Automatic long breaks after 4 sessions
+
+Exit countdown animation with mini timer
+
+Cleaner modular code, keeping your anime/dojo vibes intact
+
+Minor bug fixes and better session handling
 
 
 
@@ -145,28 +159,8 @@ Also: terminal apps are cool and way more customizable than mobile apps.
 
 💖 Credits
 
-Made with love (and a bit of caffeine) by Nyx
-ASCII art handcrafted using raw vibe ✨
-
-
----
-
-🆕 What’s New in V2.0
-
-Added anime-style ASCII art for focus, breaks, and exit screens to hype the user up
-
-Improved timer visuals with color changes for dramatic countdown vibes (blue → red under 60s)
-
-Added choice between built-in (recommended) breaks and custom breaks before each break session
-
-Automatic long breaks after 4 sessions to encourage proper rest
-
-Dramatic “Continue or Quit” prompt with countdown exit animation for that dojo farewell feel
-
-Cleaner, modular C++ code with clear function separation for timers, countdowns, and UI
-
-ANSI color macros for easy customization and more readable output
-
+Made with love and caffeine by Nyx
+ASCII art handcrafted for maximum anime vibes ✨
 
 
 ---
