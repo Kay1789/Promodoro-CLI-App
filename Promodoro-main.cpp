@@ -143,7 +143,7 @@ auto main()->int{
     // ====== UI Intro ======
     std::cout << RGB_Color(171, 149, 50) << "|~_~_~_~_~_~_~_~_~|" << Reset << "\n";
     std::cout << RGB_Color(28, 53, 92) << RGB_Color_BG(115, 123, 126) 
-              << "   ⚔️  PROMODORO APP V2.0  ⚔️   " << Reset << "\n";
+              << "   ⚔️  PROMODORO APP V3.4-0  ⚔️   " << Reset << "\n";
     std::cout << RGB_Color(171, 149, 50) << "|~_~_~_~_~_~_~_~_~|" << Reset << "\n";
     std::cout << RGB_Color(225, 232, 162) << "    『 Focus Mode Engaged 』    " << Reset << "\n";
     std::cout << RGB_Color(225, 232, 162) << "   🌸 Let the coding saga begin 🌸  " << Reset << "\n";
